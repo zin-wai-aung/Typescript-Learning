@@ -1,30 +1,33 @@
 type Pizza = {
-  name: string;
-  price: number;
+  id:number,
+  name: string,
+  price: number
 };
 
 type Order = {
   id: number;
   pizza: Pizza;
-  status: string;
+  status: "ordered" | "completed"
 };
-
-const menu = [
-  { name: "Margherita", price: 8 },
-  { name: "Pepperoni", price: 15 },
-  { name: "Hawaiian", price: 10 },
-  { name: "Veggie", price: 5 },
-];
 
 let cashInRegister = 100;
 let nextOrderId = 1;
+let nextPizzaId = 1;
+
+const menu :Pizza[] = [
+  {id: nextPizzaId++, name: "Margherita", price: 8 },
+  {id: nextPizzaId++, name: "Pepperoni", price: 15 },
+  {id: nextPizzaId++, name: "Hawaiian", price: 10 },
+  {id: nextPizzaId++, name: "Veggie", price: 5 },
+];
+
 const orderQueue: Order[] = [];
 
-function addNewPizza(pizzaObj: Pizza) {
+function addNewPizza(pizzaObj: Pizza):void {
   menu.push(pizzaObj);
 }
 
-function placeOrder(pizzaName: string) {
+function placeOrder(pizzaName: string):Order|undefined {
   const selectedPizza = menu.find((pizzaObj) => pizzaObj.name === pizzaName);
   if (!selectedPizza) {
     console.error(`${pizzaName} doesn't exist in the menu.`);
@@ -50,9 +53,20 @@ function completeOrder(orderId: number) {
   return order;
 }
 
-addNewPizza({ name: "Chicken Bacon Ranch", price: 12 });
-addNewPizza({ name: "BBQ Chicken", price: 10 });
-addNewPizza({ name: "Spicy Sausage", price: 11 });
+export function getPizzaDetail(identifier:string|number):Pizza | undefined {
+  if (typeof identifier === "string") {
+    return menu.find((pizza)=>pizza.name.toLocaleLowerCase() === identifier.toLocaleLowerCase())
+  }else if(typeof identifier === "number"){
+    return menu.find((pizza)=>pizza.id === identifier)
+  } else {
+    throw new TypeError(`Parame ter ${identifier} must be either string or number`)
+  }
+}
+
+
+addNewPizza({id: nextPizzaId++, name: "Chicken Bacon Ranch", price: 12 });
+addNewPizza({id: nextPizzaId++,name: "BBQ Chicken", price: 10 });
+addNewPizza({id: nextPizzaId++, name: "Spicy Sausage", price: 11 });
 
 placeOrder("Chicken Bacon Ranch");
 completeOrder(1);
@@ -60,3 +74,5 @@ completeOrder(1);
 console.log("Menu: ", menu);
 console.log("Cash In Register: ", cashInRegister);
 console.log("Order Queue: ", orderQueue);
+
+console.log(getPizzaDetail(1));
